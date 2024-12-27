@@ -3,114 +3,93 @@ from .NodoArbolB import NodoArbolB
 class ArbolB:
     # Constructor de la clase   
     def __init__(self, orden: int):
-        self.root: NodoArbolB = NodoArbolB(True)  # este es el nodo raíz
+        self.raiz: NodoArbolB = NodoArbolB(True)  # este es el nodo raíz
         self.orden: int = orden  # este es el valor de m
     
-    def insertar_clave(self, valor: int):
-        root: NodoArbolB = self.root
-
-        if len(root.claves) == self.orden - 1:
-            nodo: NodoArbolB = NodoArbolB(False)
-            self.root = nodo
-            nodo.hijos.insert(0, root)  # prácticamente esto inserta a la izquierda
-            self.dividir_hijo(nodo, 0)
-            self.insertar_valor_no_completo(nodo, valor)
-        else:
-            self.insertar_valor_no_completo(root, valor)
+    def insertar_valor(self, valor: int):
+        raiz : NodoArbolB = self.raiz;
+        self.insertar_valor_no_completo(raiz, valor);
+        if (len(raiz.claves) > self.orden - 1): # Si la raíz se llena, se divide
+            nodo: NodoArbolB = NodoArbolB();   
+            self.raiz = nodo;
+            nodo.hijos.insert(0, raiz);
+            self.dividir_pagina(nodo, 0);
 
     def insertar_valor_no_completo(self, raiz: NodoArbolB, valor: int):
-        contador: int = len(raiz.claves) - 1
+        posicion: int = len(raiz.claves) - 1; # Esto es para recorrer las claves del nodo
+    
+        if (raiz.hoja):
+            # Si es una hoja, se inserta la clave en la posición correcta
+            raiz.claves.append(None);
+            while (posicion >= 0 and valor < raiz.claves[posicion]):
+                raiz.claves[posicion + 1] = raiz.claves[posicion];
+                posicion -= 1;
+            raiz.claves[posicion + 1] = valor;
 
-        if raiz.hoja:
-            raiz.claves.append(None)
-
-            # si contador = 2 ; claves = [2, 4, 6]; valor = 5;
-            while contador >= 0 and valor < raiz.claves[contador]:  # 1. true
-                raiz.claves[contador + 1] = raiz.claves[contador]
-                contador -= 1
-            raiz.claves[contador + 1] = valor  # claves = [2, 4, 5, 6] <- de esta forma se inserta el valor en la hoja
         else:
-            # recorrer nuevamente nuestras claves para saber hacia qué hijo vamos a ir
-            while contador >= 0 and valor < raiz.claves[contador]:
-                contador -= 1
-            contador += 1
+            # Si no es una hoja, se busca la hoja donde se debe insertar la clave
+            while (posicion >= 0 and valor < raiz.claves[posicion]):
+                posicion -= 1;
+    
+            posicion += 1;
+            self.insertar_valor_no_completo(raiz.hijos[posicion], valor);
+            if (len(raiz.hijos[posicion].claves) > self.orden - 1):
+                self.dividir_pagina(raiz, posicion);
 
-            if len(raiz.hijos[contador].claves) == self.orden - 1:
-                # separar los nodos
-                self.dividir_hijo(raiz, contador)
-                if valor > raiz.claves[contador]:
-                    contador += 1
+    def dividir_pagina(self, raiz: NodoArbolB, posicion: int):
+        posicion_media: int = int((self.orden -1) // 2);
 
-            self.insertar_valor_no_completo(raiz.hijos[contador], valor)
+        hijo: NodoArbolB = raiz.hijos[posicion];
+        nodo: NodoArbolB = NodoArbolB(hijo.hoja);
 
-    def dividir_hijo(self, raiz: NodoArbolB, posicion: int):
-        posicion_media: int = (self.orden - 1) // 2  # Castear a entero
-        hijo: NodoArbolB = raiz.hijos[posicion]
-        nodo: NodoArbolB = NodoArbolB(hijo.hoja)  # Crear un nuevo nodo
+        raiz.hijos.insert(posicion + 1,  nodo);
 
-        raiz.hijos.insert(posicion + 1, nodo)
-        raiz.claves.insert(posicion, hijo.claves[posicion_media])
-        nodo.claves = hijo.claves[posicion_media + 1:]
-        hijo.claves = hijo.claves[:posicion_media]
+        raiz.claves.insert(posicion, hijo.claves[posicion_media]);
 
-        if not hijo.hoja:  # si el hijo no es una hoja
-            nodo.hijos = hijo.hijos[posicion_media + 1:]
-            hijo.hijos = hijo.hijos[:posicion_media + 1]
+        nodo.claves = hijo.claves[posicion_media + 1: posicion_media * 2 + 1];
+        hijo.claves = hijo.claves[0: posicion_media];
 
-    def imprimir_usuario(self) -> str:
-        # Este método simplemente llama al método imprimir con la raíz.
-        return self.imprimir(self.root)
-
-    def imprimir(self, nodo: NodoArbolB) -> str:
-        # Este método recursivo recorre todo el árbol.
-        arbol = "["
-
-        # Recorrer las claves de este nodo
-        for item in nodo.claves:
-            arbol += f"{item}, "
-
-        arbol += "]"
-
-        # Recursivamente recorrer los hijos si los tiene
-        for item in nodo.hijos:
-            arbol += self.imprimir(item)  # Llamada recursiva
-
-        return arbol
-
+        #Si el nodo que estamos dividiendo no es una hoja, se deben mover los hijos
+        if not hijo.hoja:
+            nodo.hijos = hijo.hijos[posicion_media + 1: posicion_media * 2 + 2];
+            hijo.hijos = hijo.hijos[0: posicion_media + 1];
 
     def generar_graphviz(self) -> str:
         """
         Genera el código Graphviz para representar el árbol B.
         """
-        def recorrer_nodos(nodo: NodoArbolB, contador: int) -> (str, int):
+        def recorrer_nodos(nodo: NodoArbolB, contador: list) -> (str, str):
             """
-            Recorre los nodos de forma recursiva y genera las etiquetas de Graphviz.
+            Recorre los nodos de forma recursiva para generar etiquetas y conexiones.
             """
             if nodo is None:
-                return "", contador
+                return "", ""
 
-            nodo_id = f"n{contador}"
-            contador += 1
-            contenido = f'{nodo_id} [label = "'
+            nodo_id = f"n{contador[0]}"
+            contador[0] += 1
+            etiquetas = f'{nodo_id} [label = "'
 
-            # Agregar las claves con formato Graphviz
+            # Crear etiquetas para las claves
             for i, clave in enumerate(nodo.claves):
-                contenido += f'<f{i}>{clave} | '
-            contenido = contenido.rstrip(' | ') + '"];\n'
+                etiquetas += f'<f{i}>{clave} | '
+            etiquetas = etiquetas.rstrip(' | ') + '"];\n'
 
             conexiones = ""
             if not nodo.hoja:
                 for i, hijo in enumerate(nodo.hijos):
-                    hijo_id = f"n{contador}"
+                    hijo_id = f"n{contador[0]}"
+                    sub_etiquetas, sub_conexiones = recorrer_nodos(hijo, contador)
+                    etiquetas += sub_etiquetas
+                    conexiones += sub_conexiones
                     conexiones += f'{nodo_id}:f{i} -> {hijo_id};\n'
-                    hijo_grafo, contador = recorrer_nodos(hijo, contador)
-                    contenido += hijo_grafo
 
-            return contenido + conexiones, contador
+            return etiquetas, conexiones
 
-        grafo, _ = recorrer_nodos(self.root, 0)
-        return "digraph G {\nnode [shape = record];\n" + grafo + "}"
-    
+        # Contador inicial como una lista para pasarlo por referencia
+        contador = [0]
+        etiquetas, conexiones = recorrer_nodos(self.raiz, contador)
 
-    def __str__(self):
-        return f"{self.root}"
+        return f'digraph G {{\nnode [shape = record];\n{etiquetas}{conexiones}}}'
+
+
+
