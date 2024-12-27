@@ -2,7 +2,7 @@ from src.backend.ArbolB.ArbolB import ArbolB
 
 
 def main() -> None:
-    print("Hola, mundo!")
+
     arbolB: ArbolB = ArbolB(5);
 
     # Insertar claves en el arbol B de grado 5
