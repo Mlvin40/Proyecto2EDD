@@ -77,6 +77,39 @@ class ArbolB:
 
         return arbol
 
+
+    def generar_graphviz(self) -> str:
+        """
+        Genera el código Graphviz para representar el árbol B.
+        """
+        def recorrer_nodos(nodo: NodoArbolB, contador: int) -> (str, int):
+            """
+            Recorre los nodos de forma recursiva y genera las etiquetas de Graphviz.
+            """
+            if nodo is None:
+                return "", contador
+
+            nodo_id = f"n{contador}"
+            contador += 1
+            contenido = f'{nodo_id} [label = "'
+
+            # Agregar las claves con formato Graphviz
+            for i, clave in enumerate(nodo.claves):
+                contenido += f'<f{i}>{clave} | '
+            contenido = contenido.rstrip(' | ') + '"];\n'
+
+            conexiones = ""
+            if not nodo.hoja:
+                for i, hijo in enumerate(nodo.hijos):
+                    hijo_id = f"n{contador}"
+                    conexiones += f'{nodo_id}:f{i} -> {hijo_id};\n'
+                    hijo_grafo, contador = recorrer_nodos(hijo, contador)
+                    contenido += hijo_grafo
+
+            return contenido + conexiones, contador
+
+        grafo, _ = recorrer_nodos(self.root, 0)
+        return "digraph G {\nnode [shape = record];\n" + grafo + "}"
     
 
     def __str__(self):

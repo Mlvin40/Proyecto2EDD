@@ -3,8 +3,9 @@ from src.backend.ArbolB.ArbolB import ArbolB
 
 def main() -> None:
     print("Hola, mundo!")
-
     arbolB: ArbolB = ArbolB(5);
+
+    # Insertar claves en el arbol B de grado 5
     arbolB.insertar_clave(5);
     arbolB.insertar_clave(6);
     arbolB.insertar_clave(4);
@@ -13,13 +14,18 @@ def main() -> None:
     arbolB.insertar_clave(9);
     arbolB.insertar_clave(10);
     arbolB.insertar_clave(3);
-
     arbolB.insertar_clave(1);
-
     arbolB.insertar_clave(12);
-
     arbolB.insertar_clave(0);
+    arbolB.insertar_clave(-1);
+    arbolB.insertar_clave(13);
+    arbolB.insertar_clave(20);
+
+
+
     print(arbolB.imprimir_usuario());
+    prueba = arbolB.generar_graphviz();
+    print(prueba);
 
 
 if __name__ == "__main__":
