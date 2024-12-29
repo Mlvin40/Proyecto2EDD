@@ -1,15 +1,13 @@
+from src.backend.entidades.Vehiculo import Vehiculo
+
 class NodoArbolB:
     # Constructor de la clase
-    def __init__(self, hoja = False):
+    def __init__(self, hoja=False):
         self.hoja: bool = hoja
-        self.claves: list[int] = [] # este es el orden del arbol -1 (m-1)
-        self.hijos: list[NodoArbolB] = [] # orden  del arbol (m)
-    
+        self.claves: list[Vehiculo] = []  # Lista de objetos Vehiculo
+        self.hijos: list[NodoArbolB] = []  # Lista de nodos hijos
+
     def __str__(self):
-        return f"Hoja: {self.hoja}, Claves: {self.claves}, Hijos: {self.hijos}"
+        claves_str = ", ".join(str(clave.get_placa()) for clave in self.claves)
+        return f"Hoja: {self.hoja}, Claves: [{claves_str}], Hijos: {len(self.hijos)}"
 
-         
-
-
-
-    

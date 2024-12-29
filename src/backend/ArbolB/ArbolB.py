@@ -1,67 +1,63 @@
 from .NodoArbolB import NodoArbolB
+from src.backend.entidades.Vehiculo import Vehiculo
 
 class ArbolB:
-    # Constructor de la clase   
+    # Constructor de la clase
     def __init__(self, orden: int):
-        self.raiz: NodoArbolB = NodoArbolB(True)  # este es el nodo raíz
-        self.orden: int = orden  # este es el valor de m
-    
-    def insertar_valor(self, valor: int):
-        raiz : NodoArbolB = self.raiz;
-        self.insertar_valor_no_completo(raiz, valor);
-        if (len(raiz.claves) > self.orden - 1): # Si la raíz se llena, se divide
-            nodo: NodoArbolB = NodoArbolB();   
-            self.raiz = nodo;
-            nodo.hijos.insert(0, raiz);
-            self.dividir_pagina(nodo, 0);
+        self.raiz: NodoArbolB = NodoArbolB(True)  # Nodo raíz inicial
+        self.orden: int = orden  # Orden del árbol B
 
-    def insertar_valor_no_completo(self, raiz: NodoArbolB, valor: int):
-        posicion: int = len(raiz.claves) - 1; # Esto es para recorrer las claves del nodo
-    
-        if (raiz.hoja):
-            # Si es una hoja, se inserta la clave en la posición correcta
-            raiz.claves.append(None);
-            while (posicion >= 0 and valor < raiz.claves[posicion]):
-                raiz.claves[posicion + 1] = raiz.claves[posicion];
-                posicion -= 1;
-            raiz.claves[posicion + 1] = valor;
+    def insertar_valor(self, vehiculo: Vehiculo):
+        raiz: NodoArbolB = self.raiz
+        self.insertar_valor_no_completo(raiz, vehiculo)
+        if len(raiz.claves) > self.orden - 1:  # Si la raíz se llena, se divide
+            nodo: NodoArbolB = NodoArbolB()
+            self.raiz = nodo
+            nodo.hijos.insert(0, raiz)
+            self.dividir_pagina(nodo, 0)
 
+    def insertar_valor_no_completo(self, nodo: NodoArbolB, vehiculo: Vehiculo):
+        posicion: int = len(nodo.claves) - 1
+
+        if nodo.hoja:
+            # Insertar en la posición correcta
+            nodo.claves.append(None)
+            while posicion >= 0 and vehiculo.get_placa() < nodo.claves[posicion].get_placa():
+                nodo.claves[posicion + 1] = nodo.claves[posicion]
+                posicion -= 1
+            nodo.claves[posicion + 1] = vehiculo
         else:
-            # Si no es una hoja, se busca la hoja donde se debe insertar la clave
-            while (posicion >= 0 and valor < raiz.claves[posicion]):
-                posicion -= 1;
-    
-            posicion += 1;
-            self.insertar_valor_no_completo(raiz.hijos[posicion], valor);
-            if (len(raiz.hijos[posicion].claves) > self.orden - 1):
-                self.dividir_pagina(raiz, posicion);
+            # Buscar hijo adecuado
+            while posicion >= 0 and vehiculo.get_placa() < nodo.claves[posicion].get_placa():
+                posicion -= 1
 
-    def dividir_pagina(self, raiz: NodoArbolB, posicion: int):
-        posicion_media: int = int((self.orden -1) // 2);
+            posicion += 1
+            self.insertar_valor_no_completo(nodo.hijos[posicion], vehiculo)
+            if len(nodo.hijos[posicion].claves) > self.orden - 1:
+                self.dividir_pagina(nodo, posicion)
 
-        hijo: NodoArbolB = raiz.hijos[posicion];
-        nodo: NodoArbolB = NodoArbolB(hijo.hoja);
+    def dividir_pagina(self, nodo: NodoArbolB, posicion: int):
+        posicion_media: int = (self.orden - 1) // 2
 
-        raiz.hijos.insert(posicion + 1,  nodo);
+        hijo: NodoArbolB = nodo.hijos[posicion]
+        nuevo_hijo: NodoArbolB = NodoArbolB(hijo.hoja)
 
-        raiz.claves.insert(posicion, hijo.claves[posicion_media]);
+        # Mover claves y nodos hijos
+        nodo.hijos.insert(posicion + 1, nuevo_hijo)
+        nodo.claves.insert(posicion, hijo.claves[posicion_media])
 
-        nodo.claves = hijo.claves[posicion_media + 1: posicion_media * 2 + 1];
-        hijo.claves = hijo.claves[0: posicion_media];
+        nuevo_hijo.claves = hijo.claves[posicion_media + 1:]
+        hijo.claves = hijo.claves[:posicion_media]
 
-        #Si el nodo que estamos dividiendo no es una hoja, se deben mover los hijos
         if not hijo.hoja:
-            nodo.hijos = hijo.hijos[posicion_media + 1: posicion_media * 2 + 2];
-            hijo.hijos = hijo.hijos[0: posicion_media + 1];
+            nuevo_hijo.hijos = hijo.hijos[posicion_media + 1:]
+            hijo.hijos = hijo.hijos[:posicion_media + 1]
 
     def generar_graphviz(self) -> str:
         """
         Genera el código Graphviz para representar el árbol B.
         """
         def recorrer_nodos(nodo: NodoArbolB, contador: list) -> (str, str):
-            """
-            Recorre los nodos de forma recursiva para generar etiquetas y conexiones.
-            """
             if nodo is None:
                 return "", ""
 
@@ -69,9 +65,8 @@ class ArbolB:
             contador[0] += 1
             etiquetas = f'{nodo_id} [label = "'
 
-            # Crear etiquetas para las claves
-            for i, clave in enumerate(nodo.claves):
-                etiquetas += f'<f{i}>{clave} | '
+            for i, vehiculo in enumerate(nodo.claves):
+                etiquetas += f'<f{i}>{vehiculo.get_placa()} | '
             etiquetas = etiquetas.rstrip(' | ') + '"];\n'
 
             conexiones = ""
@@ -85,11 +80,6 @@ class ArbolB:
 
             return etiquetas, conexiones
 
-        # Contador inicial como una lista para pasarlo por referencia
         contador = [0]
         etiquetas, conexiones = recorrer_nodos(self.raiz, contador)
-
         return f'digraph G {{\nnode [shape = record];\n{etiquetas}{conexiones}}}'
-
-
-

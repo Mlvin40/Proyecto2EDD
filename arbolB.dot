@@ -1,0 +1,38 @@
+digraph G {
+node [shape = record];
+n0 [label = "<f0>441NEY | <f1>760YPU"];
+n1 [label = "<f0>216SBS | <f1>281KKD | <f2>290INL | <f3>391MSI"];
+n2 [label = "<f0>100KAR | <f1>109XGC | <f2>111UKK | <f3>116PWJ"];
+n3 [label = "<f0>244AOH | <f1>266IXH | <f2>268LVP | <f3>279IYP"];
+n4 [label = "<f0>284SEX | <f1>287QQN"];
+n5 [label = "<f0>303LNT | <f1>384AAE"];
+n6 [label = "<f0>413GRT | <f1>419QXC"];
+n7 [label = "<f0>498WDL | <f1>548AKO | <f2>659GVT | <f3>693XCN"];
+n8 [label = "<f0>444YOZ | <f1>455CXZ | <f2>485RYE"];
+n9 [label = "<f0>506XRM | <f1>545BZB | <f2>546XIH"];
+n10 [label = "<f0>617VUY | <f1>635NXJ"];
+n11 [label = "<f0>660DQS | <f1>666TUA | <f2>678FTV"];
+n12 [label = "<f0>709HMY | <f1>746GUH | <f2>748ILF"];
+n13 [label = "<f0>812MSU | <f1>877GXL | <f2>962GGU"];
+n14 [label = "<f0>785BUI | <f1>807WWV"];
+n15 [label = "<f0>843HFN | <f1>860LHH"];
+n16 [label = "<f0>920SKO | <f1>947GGV"];
+n17 [label = "<f0>970GUB | <f1>979DTM | <f2>982ONR"];
+n1:f0 -> n2;
+n1:f1 -> n3;
+n1:f2 -> n4;
+n1:f3 -> n5;
+n1:f4 -> n6;
+n0:f0 -> n1;
+n7:f0 -> n8;
+n7:f1 -> n9;
+n7:f2 -> n10;
+n7:f3 -> n11;
+n7:f4 -> n12;
+n0:f1 -> n7;
+n13:f0 -> n14;
+n13:f1 -> n15;
+n13:f2 -> n16;
+n13:f3 -> n17;
+n0:f2 -> n13;
+}
