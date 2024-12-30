@@ -1,8 +1,11 @@
 digraph Clientes {
     rankdir=LR;
     node [shape=record];
+    "Elian Estrada (DPI: 3000853700101)" [label="Elian Estrada (DPI: 3000853700101)"];
+    "Elian Estrada (DPI: 3000853700101)" -> "Leila Gomez (DPI: 3000853700102)" ;
     "Leila Gomez (DPI: 3000853700102)" [label="Leila Gomez (DPI: 3000853700102)"];
     "Leila Gomez (DPI: 3000853700102)" -> "Emy Ruiz (DPI: 3000853700103)" ;
+    "Leila Gomez (DPI: 3000853700102)" -> "Elian Estrada (DPI: 3000853700101)" ;
     "Emy Ruiz (DPI: 3000853700103)" [label="Emy Ruiz (DPI: 3000853700103)"];
     "Emy Ruiz (DPI: 3000853700103)" -> "Roxana Lopez (DPI: 3000853700104)" ;
     "Emy Ruiz (DPI: 3000853700103)" -> "Leila Gomez (DPI: 3000853700102)" ;
@@ -130,7 +133,10 @@ digraph Clientes {
     "Carlo Arriola (DPI: 3000853790101)" -> "Hernaldo Juarez (DPI: 3001853700101)" ;
     "Carlo Arriola (DPI: 3000853790101)" -> "Jian Gutierrez (DPI: 3000853780101)" ;
     "Hernaldo Juarez (DPI: 3001853700101)" [label="Hernaldo Juarez (DPI: 3001853700101)"];
+    "Hernaldo Juarez (DPI: 3001853700101)" -> "Luis Filomeno (DPI: 3002853700101)" ;
     "Hernaldo Juarez (DPI: 3001853700101)" -> "Carlo Arriola (DPI: 3000853790101)" ;
-    "Leila Gomez (DPI: 3000853700102)" -> "Hernaldo Juarez (DPI: 3001853700101)" ;
-    "Hernaldo Juarez (DPI: 3001853700101)" -> "Leila Gomez (DPI: 3000853700102)" ;
+    "Luis Filomeno (DPI: 3002853700101)" [label="Luis Filomeno (DPI: 3002853700101)"];
+    "Luis Filomeno (DPI: 3002853700101)" -> "Hernaldo Juarez (DPI: 3001853700101)" ;
+    "Elian Estrada (DPI: 3000853700101)" -> "Luis Filomeno (DPI: 3002853700101)" ;
+    "Luis Filomeno (DPI: 3002853700101)" -> "Elian Estrada (DPI: 3000853700101)" ;
 }

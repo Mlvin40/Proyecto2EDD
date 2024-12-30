@@ -13,6 +13,9 @@ from src.backend.Grafo.ListaAdyacencia import ListaAdyacencia
 from src.backend.entidades.Vertice import Vertice
 from src.backend.entidades.Reader import Reader
 from src.backend.entidades.Ruta import Ruta
+from src.backend.entidades.Viaje import Viaje
+from src.backend.ListaGenerica.ListaEnlazadaGenerica import ListaEnlazadaGenerica
+from src.backend.Utils.ReporteViajes import ReporteViajes
 
 class Aplicacion:
     def __init__(self, root):
@@ -22,7 +25,11 @@ class Aplicacion:
         self.lista_rutas: list[Ruta] = [];
         self.listaAdyacencia = ListaAdyacencia();
 
-        self.lector = Reader(self.lista_clientes, self.arbol_vehiculos, self.lista_rutas);       
+        self.lector = Reader(self.lista_clientes, self.arbol_vehiculos, self.lista_rutas);
+
+        #Se crea la lista enlazada generica para los viajes de tipo Viaje
+        self.lista_viajes = ListaEnlazadaGenerica[Viaje]();
+        self.reporte_viajes = ReporteViajes(self.lista_viajes);
 
         self.root = root
         self.root.title("Llega Rapidito")
@@ -35,7 +42,6 @@ class Aplicacion:
         # Para mostrar la imagen generada
         self.label_imagen = tk.Label(root)
         self.label_imagen.pack()
-
 
         # Menú Cliente
         cliente_menu = tk.Menu(menu_bar, tearoff=0)
@@ -58,12 +64,104 @@ class Aplicacion:
         vehiculo_menu.add_command(label="Mostrar Reporte", command=self.mostrar_reporte_vehiculo) # Ya implementado
         menu_bar.add_cascade(label="Vehículo", menu=vehiculo_menu)
 
-
         # Menú Rutas
         rutas_menu = tk.Menu(menu_bar, tearoff=0)
         rutas_menu.add_command(label="Carga Masiva", command=self.carga_masiva_rutas) # Ya implementado
         rutas_menu.add_command(label="Mostrar Reporte", command=self.mostrar_reporte_rutas) # Ya implementado 
         menu_bar.add_cascade(label="Rutas", menu=rutas_menu) 
+
+        # Menu Viajes 
+        viajes_menu = tk.Menu(menu_bar, tearoff=0)
+        viajes_menu.add_command(label="Agregar Viaje", command=self.agregar_viaje)
+        viajes_menu.add_command(label="Mostrar Viaje", command=self.mostrar_viaje) 
+        viajes_menu.add_command(label="Mostrar Reporte", command=self.mostrar_reporte_viaje)
+        menu_bar.add_cascade(label="Viajes", menu=viajes_menu)
+
+    ########################## Métodos del menú Viajes ##########################
+
+    def agregar_viaje(self):
+        ventana_agregar = tk.Toplevel(self.root)
+        ventana_agregar.title("Agregar Viaje")
+        
+        # Labels y campos de entrada para los datos del viaje
+        tk.Label(ventana_agregar, text="Origen:").grid(row=0, column=0, padx=10, pady=5)
+        entrada_origen = tk.Entry(ventana_agregar)
+        entrada_origen.grid(row=0, column=1, padx=10, pady=5)
+        
+        tk.Label(ventana_agregar, text="Destino:").grid(row=1, column=0, padx=10, pady=5)
+        entrada_destino = tk.Entry(ventana_agregar)
+        entrada_destino.grid(row=1, column=1, padx=10, pady=5)
+        
+        tk.Label(ventana_agregar, text="DPI Cliente:").grid(row=2, column=0, padx=10, pady=5)
+        entrada_dpi_cliente = tk.Entry(ventana_agregar)
+        entrada_dpi_cliente.grid(row=2, column=1, padx=10, pady=5)
+        
+        tk.Label(ventana_agregar, text="Placa Vehículo:").grid(row=3, column=0, padx=10, pady=5)
+        entrada_placa_vehiculo = tk.Entry(ventana_agregar)
+        entrada_placa_vehiculo.grid(row=3, column=1, padx=10, pady=5)
+
+        # Función para agregar el viaje
+        def confirmar_agregar():
+            origen = entrada_origen.get().strip()
+            destino = entrada_destino.get().strip()
+            dpi_cliente = entrada_dpi_cliente.get().strip()
+            placa_vehiculo = entrada_placa_vehiculo.get().strip()
+
+            if origen and destino and dpi_cliente and placa_vehiculo:
+                try:
+                    dpi_cliente = int(dpi_cliente)
+                    cliente = self.lista_clientes.buscar_cliente(dpi_cliente)
+                    if cliente is None:
+                        messagebox.showerror("Error", f"No se encontró cliente con DPI: {dpi_cliente}.")
+                        return
+                    
+                    vehiculo = self.arbol_vehiculos.buscar(placa_vehiculo)
+                    if vehiculo is None:
+                        messagebox.showerror("Error", f"No se encontró vehículo con placa: {placa_vehiculo}.")
+                        return
+                    
+                    # Crear el objeto Viaje
+                    nuevo_viaje = Viaje(origen, destino, cliente, vehiculo)
+                    
+                    # Agregar el viaje a la lista de viajes
+                    self.lista_viajes.agregar_elemento(nuevo_viaje);
+                    
+                    messagebox.showinfo("Éxito", f"Viaje agregado con éxito. ID del viaje: {nuevo_viaje.get_id()}.")
+                    ventana_agregar.destroy()
+                except ValueError:
+                    messagebox.showerror("Error", "El DPI debe ser un número válido.")
+            else:
+                messagebox.showerror("Error", "Todos los campos son obligatorios.")
+
+        # Botón para confirmar la adición del viaje
+        tk.Button(ventana_agregar, text="Agregar", command=confirmar_agregar).grid(row=4, column=0, columnspan=2, pady=10)
+
+        ventana_agregar.transient(self.root)
+        ventana_agregar.grab_set()
+        self.root.wait_window(ventana_agregar)
+
+
+    def mostrar_viaje(self):
+        print("Mostrar Viaje")
+
+    def mostrar_reporte_viaje(self):
+        try:
+            self.reporte_viajes.mostrar_graphviz();
+            ruta_imagen = "Viajes.png" 
+
+            # Carga y ajusta la imagen
+            img = Image.open(ruta_imagen)
+            img = img.resize((500, 500)) 
+            img_tk = ImageTk.PhotoImage(img)
+
+            self.label_imagen.config(image=img_tk)
+            self.label_imagen.image = img_tk
+
+            messagebox.showinfo("Reporte", "Reporte de viajes generado exitosamente y mostrado en la interfaz.")
+        except FileNotFoundError:
+            messagebox.showerror("Error", f"No se encontró el archivo de imagen {ruta_imagen}.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Hubo un problema al cargar la imagen: {e}")
 
 
     ########################## Métodos del menú Cliente ##########################
@@ -554,7 +652,6 @@ class Aplicacion:
 
 
     ########################## Métodos del menú Rutas ##########################
-
     def carga_masiva_rutas(self):
         # limpiar la lista de rutas antes de cargar nuevas rutas
         self.lista_rutas.clear();

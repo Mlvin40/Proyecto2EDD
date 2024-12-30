@@ -1,0 +1,7 @@
+digraph Viajes {
+    rankdir=LR;
+    node [shape=record];
+    "Viaje 7458606: Toronto -> Polonia" [label="Viaje 7458606: Toronto -> Polonia"];
+    "Viaje 7458606: Toronto -> Polonia" -> "Viaje 4033848: Espana -> Argentina";
+    "Viaje 4033848: Espana -> Argentina" [label="Viaje 4033848: Espana -> Argentina"];
+}
