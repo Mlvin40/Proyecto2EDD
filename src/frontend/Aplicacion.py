@@ -64,6 +64,7 @@ class Aplicacion:
         vehiculo_menu.add_command(label="Mostrar Reporte", command=self.mostrar_reporte_vehiculo) # Ya implementado
         menu_bar.add_cascade(label="Vehículo", menu=vehiculo_menu)
 
+
         # Menú Rutas
         rutas_menu = tk.Menu(menu_bar, tearoff=0)
         rutas_menu.add_command(label="Carga Masiva", command=self.carga_masiva_rutas) # Ya implementado
@@ -184,30 +185,30 @@ class Aplicacion:
         ventana_agregar.title("Agregar Cliente")
         ventana_agregar.geometry("300x400")
 
-        # Etiquetas para la entidad Cliente
-        tk.Label(ventana_agregar, text="DPI").pack(pady=5)
+        # Etiquetas y entradas para la entidad Cliente
+        tk.Label(ventana_agregar, text="DPI").grid(row=0, column=0, padx=10, pady=5, sticky="w")
         entry_dpi = tk.Entry(ventana_agregar)
-        entry_dpi.pack(pady=5)
+        entry_dpi.grid(row=0, column=1, padx=10, pady=5)
 
-        tk.Label(ventana_agregar, text="Nombres").pack(pady=5)
+        tk.Label(ventana_agregar, text="Nombres").grid(row=1, column=0, padx=10, pady=5, sticky="w")
         entry_nombres = tk.Entry(ventana_agregar)
-        entry_nombres.pack(pady=5)
+        entry_nombres.grid(row=1, column=1, padx=10, pady=5)
 
-        tk.Label(ventana_agregar, text="Apellidos").pack(pady=5)
+        tk.Label(ventana_agregar, text="Apellidos").grid(row=2, column=0, padx=10, pady=5, sticky="w")
         entry_apellidos = tk.Entry(ventana_agregar)
-        entry_apellidos.pack(pady=5)
+        entry_apellidos.grid(row=2, column=1, padx=10, pady=5)
 
-        tk.Label(ventana_agregar, text="Género").pack(pady=5)
+        tk.Label(ventana_agregar, text="Género").grid(row=3, column=0, padx=10, pady=5, sticky="w")
         entry_genero = tk.Entry(ventana_agregar)
-        entry_genero.pack(pady=5)
+        entry_genero.grid(row=3, column=1, padx=10, pady=5)
 
-        tk.Label(ventana_agregar, text="Teléfono").pack(pady=5)
+        tk.Label(ventana_agregar, text="Teléfono").grid(row=4, column=0, padx=10, pady=5, sticky="w")
         entry_telefono = tk.Entry(ventana_agregar)
-        entry_telefono.pack(pady=5)
+        entry_telefono.grid(row=4, column=1, padx=10, pady=5)
 
-        tk.Label(ventana_agregar, text="Dirección").pack(pady=5)
+        tk.Label(ventana_agregar, text="Dirección").grid(row=5, column=0, padx=10, pady=5, sticky="w")
         entry_direccion = tk.Entry(ventana_agregar)
-        entry_direccion.pack(pady=5)
+        entry_direccion.grid(row=5, column=1, padx=10, pady=5)
 
         # Función para validar los campos y agregar el cliente a la lista
         def agregar():
@@ -216,7 +217,7 @@ class Aplicacion:
                 nombres = entry_nombres.get()
                 apellidos = entry_apellidos.get()
                 genero = entry_genero.get()
-                telefono = int(entry_telefono.get()) 
+                telefono = int(entry_telefono.get())
                 direccion = entry_direccion.get()
 
                 # Verificar que todos los campos no estén vacíos
@@ -227,7 +228,7 @@ class Aplicacion:
                 nuevo_cliente = Cliente(dpi, nombres, apellidos, genero, telefono, direccion)
 
                 # Agregar el cliente a la lista de clientes
-                self.lista_clientes.agregarElemento(nuevo_cliente);
+                self.lista_clientes.agregarElemento(nuevo_cliente)
                 messagebox.showinfo("Éxito", "Cliente agregado exitosamente.")
                 ventana_agregar.destroy()
 
@@ -238,17 +239,17 @@ class Aplicacion:
 
         # Botón para agregar el cliente
         btn_agregar = tk.Button(ventana_agregar, text="Agregar Cliente", command=agregar)
-        btn_agregar.pack(pady=20)
+        btn_agregar.grid(row=6, column=0, columnspan=2, pady=20)
 
         # Botón para cerrar la ventana
         btn_cerrar = tk.Button(ventana_agregar, text="Cerrar", command=ventana_agregar.destroy)
-        btn_cerrar.pack()
+        btn_cerrar.grid(row=7, column=0, columnspan=2)
 
 
     def modificar_cliente(self):
         ventana_modificar = tk.Toplevel(self.root)
         ventana_modificar.title("Modificar Cliente")
-        ventana_modificar.geometry("300x400")
+        ventana_modificar.geometry("400x580")
 
         # Etiqueta y campo de entrada para ingresar el DPI del cliente a modificar
         tk.Label(ventana_modificar, text="Ingrese el DPI del cliente a modificar").pack(pady=5)
@@ -501,7 +502,7 @@ class Aplicacion:
     def modificar_vehiculo(self):
         ventana_modificar = tk.Toplevel(self.root)
         ventana_modificar.title("Modificar Vehículo")
-        ventana_modificar.geometry("300x400")
+        ventana_modificar.geometry("300x480")
 
         # Etiqueta y campo de entrada para ingresar la placa del vehículo a modificar
         tk.Label(ventana_modificar, text="Ingrese la Placa del vehículo a modificar").pack(pady=5)
