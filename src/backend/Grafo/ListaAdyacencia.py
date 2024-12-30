@@ -30,7 +30,7 @@ class ListaAdyacencia:
             resultado.valor.vecinos.insertar_final(destino);
 
     def imprimir(self):
-        dot = 'digraph G {\n\t edge[arrowhead=none fontcolor=black color ="ff5400"];\n\t'
+        dot = 'digraph G {\n\t concentrate = true; \n\t edge[arrowhead=none fontcolor=black color ="ff5400"];\n\t'
         dot += 'node [shape=circle fixedsize=shape width=0.5 fontsize=7 style =filled, fillcolor="#313638", fontcolor=yellow;\n\t'
         dot += 'color=transparent];\n\t';
 

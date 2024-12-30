@@ -102,8 +102,8 @@ class ListaDobleEnlazada:
             archivo.write("}\n")
         
         # Generar los archivos PDF y PNG
-        resultadoPDF = os.system(f"dot -Tpdf {archivo_dot} -o reporte_clientes.pdf")
-        resultadoPNG = os.system(f"dot -Tpng {archivo_dot} -o reporte_clientes.png")
+        resultadoPDF = os.system(f"dot -Tpdf {archivo_dot} -o Clientes.pdf")
+        resultadoPNG = os.system(f"dot -Tpng {archivo_dot} -o Clientes.png")
 
         if resultadoPDF == 0 and resultadoPNG == 0:
             print("Reporte generado exitosamente en PDF y PNG.")

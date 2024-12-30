@@ -136,8 +136,5 @@ digraph Clientes {
     "Hernaldo Juarez (DPI: 3001853700101)" -> "Luis Filomeno (DPI: 3002853700101)" ;
     "Hernaldo Juarez (DPI: 3001853700101)" -> "Carlo Arriola (DPI: 3000853790101)" ;
     "Luis Filomeno (DPI: 3002853700101)" [label="Luis Filomeno (DPI: 3002853700101)"];
-    "Luis Filomeno (DPI: 3002853700101)" -> "Juan Perez (DPI: 3002853700102)" ;
     "Luis Filomeno (DPI: 3002853700101)" -> "Hernaldo Juarez (DPI: 3001853700101)" ;
-    "Juan Perez (DPI: 3002853700102)" [label="Juan Perez (DPI: 3002853700102)"];
-    "Juan Perez (DPI: 3002853700102)" -> "Luis Filomeno (DPI: 3002853700101)" ;
 }
