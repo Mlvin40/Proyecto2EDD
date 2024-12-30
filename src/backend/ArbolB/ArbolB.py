@@ -54,7 +54,27 @@ class ArbolB:
             nodo.hijos = hijo.hijos[posicion_media + 1: posicion_media *2 + 2]
             hijo.hijos = hijo.hijos[:posicion_media + 1];
     
+    def buscar(self, placa: str, nodo: NodoArbolB = None) -> Vehiculo:
+        #Busca un vehículo en el árbol B por su placa.
+        if nodo is None:
+            nodo = self.raiz
 
+        # Buscar la placa en las claves del nodo actual
+        for clave in nodo.claves:
+            if clave.get_placa() == placa:
+                return clave
+            
+        # Si el nodo es una hoja, no se encontró la placa
+        if nodo.hoja:
+            return None
+
+        # Buscar en el hijo correspondiente
+        i = 0
+        while i < len(nodo.claves) and placa > nodo.claves[i].get_placa():
+            i += 1
+
+        return self.buscar(placa, nodo.hijos[i])
+    
     # Métodos de reporte
     def generar_graphviz(self) -> None:
         # Generacion del reporte del arbol

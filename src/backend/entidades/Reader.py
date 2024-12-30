@@ -62,9 +62,9 @@ class Reader:
             print(f"Error al procesar vehículos: {e}")
 
 
+    #Funciona bien
     def carga_masiva_rutas(self, ruta_archivo: str): 
         #Formato = Lugar Origen / Lugar Destino / Tiempo de Ruta en segundos
-        
         try:
             with open(ruta_archivo, 'r') as archivo:
                 for linea in archivo:

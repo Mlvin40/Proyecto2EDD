@@ -41,18 +41,6 @@ class ListaDobleEnlazada:
     def estaVacia(self):
         return self.tamaño == 0
 
-    def eliminarUltimo(self):
-        if self.estaVacia():
-            raise Exception("La lista está vacía")
-        
-        if self.tamaño == 1:
-            self.inicio = None
-            self.fin = None
-        else:
-            self.fin = self.fin.anterior
-            self.fin.siguiente = None
-        self.tamaño -= 1
-
     def obtenerContenido(self, index):
         if self.estaVacia():
             raise Exception("La lista está vacía")
@@ -65,6 +53,54 @@ class ListaDobleEnlazada:
             actual = actual.siguiente
         return actual.cliente
     
+    def buscar_cliente(self, dpi: int):
+        if self.estaVacia():
+            raise Exception("La lista está vacía")
+
+        actual = self.inicio
+        while actual:
+            if actual.cliente.get_dpi() == dpi:
+                return actual.cliente  # Retorna el cliente si lo encuentra
+            actual = actual.siguiente
+        return None  # Si no lo encuentra, retorna None
+    
+    def eliminar_cliente(self, dpi: int):
+        if self.estaVacia():
+            raise Exception("La lista está vacía")
+
+        actual = self.inicio
+
+        # Si el cliente a eliminar está al inicio de la lista
+        if actual.cliente.get_dpi() == dpi:
+            if actual.siguiente:  # Si hay un siguiente nodo
+                self.inicio = actual.siguiente
+                self.inicio.anterior = None
+            else:  # Si el nodo es el único en la lista
+                self.inicio = None
+                self.fin = None
+            self.tamaño -= 1
+            return
+
+        # Buscar el cliente a eliminar en el resto de la lista
+        while actual:
+            if actual.cliente.get_dpi() == dpi:
+                # Si lo encuentra, actualiza las referencias de los nodos adyacentes
+                if actual.siguiente:
+                    actual.siguiente.anterior = actual.anterior
+                if actual.anterior:
+                    actual.anterior.siguiente = actual.siguiente
+
+                # Si es el último nodo
+                if actual == self.fin:
+                    self.fin = actual.anterior
+
+                self.tamaño -= 1
+                return
+            actual = actual.siguiente
+
+        raise Exception("Cliente no encontrado")  # Si no se encuentra el cliente
+
+
     def __str__(self):
         clientes = []
         actual = self.inicio
@@ -99,6 +135,10 @@ class ListaDobleEnlazada:
                     if actual.anterior:
                         archivo.write(f'    "{cliente_info}" -> "{actual.anterior.cliente.get_nombres()} {actual.anterior.cliente.get_apellidos()} (DPI: {actual.anterior.cliente.get_dpi()})" ;\n')
                     actual = actual.siguiente
+                #apuntar el nodo inicial anterior al final y el nodo final siguiente al inicio
+                archivo.write(f'    "{self.inicio.cliente.get_nombres()} {self.inicio.cliente.get_apellidos()} (DPI: {self.inicio.cliente.get_dpi()})" -> "{self.fin.cliente.get_nombres()} {self.fin.cliente.get_apellidos()} (DPI: {self.fin.cliente.get_dpi()})" ;\n')
+                archivo.write(f'    "{self.fin.cliente.get_nombres()} {self.fin.cliente.get_apellidos()} (DPI: {self.fin.cliente.get_dpi()})" -> "{self.inicio.cliente.get_nombres()} {self.inicio.cliente.get_apellidos()} (DPI: {self.inicio.cliente.get_dpi()})" ;\n')
+
             archivo.write("}\n")
         
         # Generar los archivos PDF y PNG
