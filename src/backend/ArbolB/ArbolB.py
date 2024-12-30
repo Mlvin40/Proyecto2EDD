@@ -1,5 +1,6 @@
 from .NodoArbolB import NodoArbolB
 from src.backend.entidades.Vehiculo import Vehiculo
+import os
 
 class ArbolB:
     # Constructor de la clase
@@ -36,50 +37,71 @@ class ArbolB:
             if len(nodo.hijos[posicion].claves) > self.orden - 1:
                 self.dividir_pagina(nodo, posicion)
 
-    def dividir_pagina(self, nodo: NodoArbolB, posicion: int):
-        posicion_media: int = (self.orden - 1) // 2
+    def dividir_pagina(self, raiz: NodoArbolB, posicion: int):
+        posicion_media: int = int((self.orden - 1) / 2);
 
-        hijo: NodoArbolB = nodo.hijos[posicion]
-        nuevo_hijo: NodoArbolB = NodoArbolB(hijo.hoja)
+        hijo: NodoArbolB = raiz.hijos[posicion]
+        nodo: NodoArbolB = NodoArbolB(hijo.hoja)
 
         # Mover claves y nodos hijos
-        nodo.hijos.insert(posicion + 1, nuevo_hijo)
-        nodo.claves.insert(posicion, hijo.claves[posicion_media])
+        raiz.hijos.insert(posicion + 1, nodo);
+        raiz.claves.insert(posicion, hijo.claves[posicion_media]);
 
-        nuevo_hijo.claves = hijo.claves[posicion_media + 1:]
-        hijo.claves = hijo.claves[:posicion_media]
+        nodo.claves = hijo.claves[posicion_media +1: posicion_media* 2 + 1:];
+        hijo.claves = hijo.claves[0:posicion_media];
 
         if not hijo.hoja:
-            nuevo_hijo.hijos = hijo.hijos[posicion_media + 1:]
-            hijo.hijos = hijo.hijos[:posicion_media + 1]
+            nodo.hijos = hijo.hijos[posicion_media + 1: posicion_media *2 + 2]
+            hijo.hijos = hijo.hijos[:posicion_media + 1];
+    
 
-    def generar_graphviz(self) -> str:
+    # Métodos de reporte
+    def generar_graphviz(self) -> None:
+        # Generacion del reporte del arbol
+
+        dot: str = '''digraph G {
+                fontcolor=white;
+                nodesep=0.5;
+                splines=false;
+                node [shape=record width=1.2 style=filled fillcolor="#313638" fontcolor=white];
+                edge [fontcolor=white color="#0070c9"];
+        '''
+        dot += self.__imprimir_contenido(self.raiz)
+        dot += "\n}"
+        ruta_dot = 'ArbolB.txt'
+
+        with open(ruta_dot, 'w') as file:
+            file.write(dot)
+
+        resultadoPNG = os.system(f"dot -Tpng {ruta_dot} -o ArbolB.png")
+        resultadoPDF = os.system(f"dot -Tpdf {ruta_dot} -o ArbolB.pdf")
+
+        if resultadoPNG == 0 and resultadoPDF == 0:
+            print("Reporte generado exitosamente!!!")
+        else:
+            print("Hubo un error al generar el reporte.")
+
+    def __imprimir_contenido(self, nodo: NodoArbolB, id: list[int] = [0]) -> str:
         """
-        Genera el código Graphviz para representar el árbol B.
+        Genera la representación en formato DOT del árbol B.
         """
-        def recorrer_nodos(nodo: NodoArbolB, contador: list) -> (str, str):
-            if nodo is None:
-                return "", ""
+        raiz_sub_arbol: NodoArbolB = nodo
+        contenido_arbol = f'n{id[0]}[label="'
+        contador: int = 0
+        for clave in raiz_sub_arbol.claves:
+            if contador == len(raiz_sub_arbol.claves) - 1:
+                contenido_arbol += f"<f{contador}>|{clave.get_placa()}|<f{contador + 1}>"
+                break
+            contenido_arbol += f"<f{contador}>|{clave.get_placa()}|"
+            contador += 1
+        contenido_arbol += '"];\n\t'
 
-            nodo_id = f"n{contador[0]}"
-            contador[0] += 1
-            etiquetas = f'{nodo_id} [label = "'
+        contador = 0
+        id_padre = id[0]
+        for sub_nodo in raiz_sub_arbol.hijos:
+            contenido_arbol += f'n{id_padre}:f{contador} -> n{id[0] + 1};\n\t'
+            id[0] += 1
+            contenido_arbol += self.__imprimir_contenido(sub_nodo, id)
+            contador += 1
 
-            for i, vehiculo in enumerate(nodo.claves):
-                etiquetas += f'<f{i}>{vehiculo.get_placa()} | '
-            etiquetas = etiquetas.rstrip(' | ') + '"];\n'
-
-            conexiones = ""
-            if not nodo.hoja:
-                for i, hijo in enumerate(nodo.hijos):
-                    hijo_id = f"n{contador[0]}"
-                    sub_etiquetas, sub_conexiones = recorrer_nodos(hijo, contador)
-                    etiquetas += sub_etiquetas
-                    conexiones += sub_conexiones
-                    conexiones += f'{nodo_id}:f{i} -> {hijo_id};\n'
-
-            return etiquetas, conexiones
-
-        contador = [0]
-        etiquetas, conexiones = recorrer_nodos(self.raiz, contador)
-        return f'digraph G {{\nnode [shape = record];\n{etiquetas}{conexiones}}}'
+        return contenido_arbol

@@ -2,12 +2,13 @@ from src.backend.ArbolB.ArbolB import ArbolB
 from .Vehiculo import Vehiculo
 from .Cliente import Cliente
 from src.backend.ListaDoble.ListaDobleEnlazada import ListaDobleEnlazada
+from src.backend.entidades.Ruta import Ruta
 
 class Reader:
-    def __init__(self, lista_circular: ListaDobleEnlazada, arbol_b: ArbolB, matriz_rutas):
-        self.lista_circular = lista_circular 
-        self.arbol_b = arbol_b              
-        self.matriz_rutas = matriz_rutas
+    def __init__(self, lista_circular: ListaDobleEnlazada, arbol_b: ArbolB, lista_rutas: list[Ruta]):
+        self.lista_circular = lista_circular; 
+        self.arbol_b = arbol_b;     
+        self.lista_rutas = lista_rutas;
         
 
     def carga_masiva_clientes(self, ruta_archivo: str):
@@ -39,7 +40,7 @@ class Reader:
         try:
             with open(ruta_archivo, 'r') as archivo:
 
-                contenido = archivo.read()  # Leer todo el archivo como una cadena
+                contenido = archivo.read()
                 lineas = contenido.split(';')  # Separar los registros por ';'
                 for linea in lineas:
                     linea = linea.strip()  # Eliminar espacios en blanco
@@ -47,7 +48,7 @@ class Reader:
                         datos = linea.split(':')  # Separar por ':'
                         if len(datos) == 4:
                             placa, marca, modelo, precio = map(str.strip, datos)
-                            # Crear vehículo y agregarlo al árbol B
+
                             vehiculo = Vehiculo(placa, marca, modelo, float(precio))
                             self.arbol_b.insertar_valor(vehiculo)
                         else:
@@ -61,11 +62,9 @@ class Reader:
             print(f"Error al procesar vehículos: {e}")
 
 
-    def carga_masiva_rutas(self, ruta_archivo: str):
-        """
-        Carga masiva de rutas desde un archivo.
-        Formato: Lugar Origen / Lugar Destino / Tiempo de Ruta en segundos
-        """
+    def carga_masiva_rutas(self, ruta_archivo: str): 
+        #Formato = Lugar Origen / Lugar Destino / Tiempo de Ruta en segundos
+        
         try:
             with open(ruta_archivo, 'r') as archivo:
                 for linea in archivo:
@@ -73,10 +72,17 @@ class Reader:
                         datos = linea.strip().split('/')
                         if len(datos) == 3:
                             origen, destino, tiempo = map(str.strip, datos)
-                            tiempo = int(tiempo)  # Convertir tiempo a número
-                            # Agregar la ruta a la matriz de adyacencia
-                            self.matriz_rutas.agregar_ruta(origen, destino, tiempo)
+                            tiempo = int(tiempo[:-1])  # Convertir tiempo a número (eliminar % y convertir a int)
+                            
+                            # Crear una instancia de la clase Ruta
+                            ruta = Ruta(origen, destino, tiempo)
+                            
+                            # Agregar la ruta a la lista
+                            self.lista_rutas.append(ruta)
+            print("Carga masiva completada exitosamente.")
         except FileNotFoundError:
             print(f"El archivo {ruta_archivo} no fue encontrado.")
+        except ValueError:
+            print("Error al procesar el tiempo de ruta, asegúrate de que es un número válido.")
         except Exception as e:
             print(f"Error al procesar rutas: {e}")
